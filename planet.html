@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(ellipse at center, #1B2735 0%, #090A0F 100%);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #display-name {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .solar-system {
+    position: relative;
+    width: 1200px;
+    height: 1200px;
+    transform: scale(0.6);
+  }
+
+  .sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    margin-top: -40px;
+    margin-left: -40px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffd045 0%, #ffb000 50%, #ff8b00 100%);
+    box-shadow: 0 0 100px #ff8b00;
+    animation: glow 4s ease-in-out infinite alternate;
+    z-index: 10;
+    cursor: pointer;
+  }
+
+  .planet-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .planet-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  .planet {
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 5;
+  }
+
+  /* Mercury */
+  .planet-orbit-1 {
+    width: 200px;
+    height: 200px;
+    z-index: 18;
+  }
+  .planet-container-1 {
+    animation: orbit 4s linear infinite;
+  }
+  .planet-1 {
+    width: 15px;
+    height: 15px;
+    background: radial-gradient(circle at 30% 30%, #888 0%, #666 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  /* Venus */
+  .planet-orbit-2 {
+    width: 280px;
+    height: 280px;
+    z-index: 17;
+  }
+  .planet-container-2 {
+    animation: orbit 6s linear infinite;
+  }
+  .planet-2 {
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle at 30% 30%, #e6b970 0%, #c49b3f 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  /* Earth */
+  .planet-orbit-3 {
+    width: 380px;
+    height: 380px;
+    z-index: 16;
+  }
+  .planet-container-3 {
+    animation: orbit 8s linear infinite;
+  }
+  .planet-3 {
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle at 30% 30%, #4b9cd3 0%, #357abd 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  /* Mars */
+  .planet-orbit-4 {
+    width: 480px;
+    height: 480px;
+    z-index: 15;
+  }
+  .planet-container-4 {
+    animation: orbit 10s linear infinite;
+  }
+  .planet-4 {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 30% 30%, #c1440e 0%, #a13a0c 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  /* Jupiter */
+  .planet-orbit-5 {
+    width: 620px;
+    height: 620px;
+    z-index: 14;
+  }
+  .planet-container-5 {
+    animation: orbit 14s linear infinite;
+  }
+  .planet-5 {
+    width: 45px;
+    height: 45px;
+    background: radial-gradient(circle at 30% 30%, #e0a156 0%, #b67b34 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  /* Saturn */
+  .planet-orbit-6 {
+    width: 780px;
+    height: 780px;
+    z-index: 13;
+  }
+  .planet-container-6 {
+    animation: orbit 18s linear infinite;
+  }
+  .planet-6 {
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle at 30% 30%, #f4d03f 0%, #d4b12e 100%);
+    left: 100%;
+    top: 50%;
+  }
+  .saturn-rings {
+  position: absolute;
+  width: 70px;
+  height: 20px;
+  background: linear-gradient(to bottom, 
+    rgba(244, 208, 63, 0.3) 0%,
+    rgba(244, 208, 63, 0.6) 50%,
+    rgba(244, 208, 63, 0.3) 100%);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%) rotate(20deg);
+  pointer-events: none;
+  z-index: -1;
+}
+  /* Uranus */
+  .planet-orbit-7 {
+    width: 920px;
+    height: 920px;
+    z-index: 12;
+  }
+  .planet-container-7 {
+    animation: orbit 22s linear infinite;
+  }
+  .planet-7 {
+    width: 35px;
+    height: 35px;
+    background: radial-gradient(circle at 30% 30%, #b8e6e6 0%, #89c7c7 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  /* Neptune */
+  .planet-orbit-8 {
+    width: 1060px;
+    height: 1060px;
+    z-index: 11;
+  }
+  .planet-container-8 {
+    animation: orbit 26s linear infinite;
+  }
+  .planet-8 {
+    width: 34px;
+    height: 34px;
+    background: radial-gradient(circle at 30% 30%, #4b6b9e 0%, #2e4372 100%);
+    left: 100%;
+    top: 50%;
+  }
+
+  @keyframes orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 80px #ff8b00; }
+    to   { box-shadow: 0 0 120px #ff8b00; }
+  }
+
+  .stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+  <div id="display-name"></div>
+  <div class="solar-system">
+    <div class="sun" data-name="Sun"></div>
+    
+    <!-- Mercury -->
+    <div class="planet-orbit planet-orbit-1">
+      <div class="planet-container planet-container-1">
+        <div class="planet planet-1" data-name="Mercury"></div>
+      </div>
+    </div>
+
+    <!-- Venus -->
+    <div class="planet-orbit planet-orbit-2">
+      <div class="planet-container planet-container-2">
+        <div class="planet planet-2" data-name="Venus"></div>
+      </div>
+    </div>
+
+    <!-- Earth -->
+    <div class="planet-orbit planet-orbit-3">
+      <div class="planet-container planet-container-3">
+        <div class="planet planet-3" data-name="Earth"></div>
+      </div>
+    </div>
+
+    <!-- Mars -->
+    <div class="planet-orbit planet-orbit-4">
+      <div class="planet-container planet-container-4">
+        <div class="planet planet-4" data-name="Mars"></div>
+      </div>
+    </div>
+
+    <!-- Jupiter -->
+    <div class="planet-orbit planet-orbit-5">
+      <div class="planet-container planet-container-5">
+        <div class="planet planet-5" data-name="Jupiter"></div>
+      </div>
+    </div>
+
+    <!-- Saturn -->
+    <div class="planet-orbit planet-orbit-6">
+      <div class="planet-container planet-container-6">
+        <div class="planet planet-6" data-name="Saturn">
+          <div class="saturn-rings"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uranus -->
+    <div class="planet-orbit planet-orbit-7">
+      <div class="planet-container planet-container-7">
+        <div class="planet planet-7" data-name="Uranus"></div>
+      </div>
+    </div>
+
+    <!-- Neptune -->
+    <div class="planet-orbit planet-orbit-8">
+      <div class="planet-container planet-container-8">
+        <div class="planet planet-8" data-name="Neptune"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function createStars() {
+      const starsContainer = document.createElement('div');
+      starsContainer.className = 'stars';
+      
+      for (let i = 0; i < 200; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        
+        star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+        
+        starsContainer.appendChild(star);
+      }
+      
+      document.body.appendChild(starsContainer);
+    }
+
+    createStars();
+
+    // Handle hover events for planets and sun
+    const displayName = document.getElementById('display-name');
+    const celestialBodies = document.querySelectorAll('.planet, .sun');
+
+    celestialBodies.forEach(body => {
+      body.addEventListener('mouseenter', () => {
+        displayName.textContent = body.dataset.name;
+        displayName.style.opacity = '1';
+      });
+
+      body.addEventListener('mouseleave', () => {
+        displayName.style.opacity = '0';
+      });
+    });
+  </script>
+</body>
+</html>
