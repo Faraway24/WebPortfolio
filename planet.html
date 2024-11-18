@@ -31,6 +31,47 @@
     transition: opacity 0.3s ease;
   }
 
+  #info-panel {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  #info-panel h2 {
+    margin: 0 0 15px 0;
+    color: #ffd045;
+    font-size: 24px;
+  }
+
+  #info-panel p {
+    margin: 10px 0;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+
+  .info-stat {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0;
+  }
+
+  .info-stat-label {
+    color: #8a8a8a;
+  }
+
   .solar-system {
     position: relative;
     width: 1200px;
@@ -183,21 +224,22 @@
     top: 50%;
   }
   .saturn-rings {
-  position: absolute;
-  width: 70px;
-  height: 20px;
-  background: linear-gradient(to bottom, 
-    rgba(244, 208, 63, 0.3) 0%,
-    rgba(244, 208, 63, 0.6) 50%,
-    rgba(244, 208, 63, 0.3) 100%);
-  border-radius: 50%;
-  left: 50%;
-  top: 50%;
-  transform-origin: center;
-  transform: translate(-50%, -50%) rotate(20deg);
-  pointer-events: none;
-  z-index: -1;
-}
+    position: absolute;
+    width: 70px;
+    height: 20px;
+    background: linear-gradient(to bottom, 
+      rgba(244, 208, 63, 0.3) 0%,
+      rgba(244, 208, 63, 0.6) 50%,
+      rgba(244, 208, 63, 0.3) 100%);
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform-origin: center;
+    transform: translate(-50%, -50%) rotate(20deg);
+    pointer-events: none;
+    z-index: -1;
+  }
+
   /* Uranus */
   .planet-orbit-7 {
     width: 920px;
@@ -233,12 +275,8 @@
   }
 
   @keyframes orbit {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   @keyframes glow {
@@ -271,6 +309,7 @@
 </head>
 <body>
   <div id="display-name"></div>
+  <div id="info-panel"></div>
   <div class="solar-system">
     <div class="sun" data-name="Sun"></div>
     
@@ -334,6 +373,63 @@
   </div>
 
   <script>
+    const planetInfo = {
+      'Sun': {
+        type: 'Star',
+        diameter: '1,392,700 km',
+        distance: 'Center of Solar System',
+        description: 'The Sun is the star at the center of our Solar System. It provides the energy that sustains life on Earth through nuclear fusion reactions in its core.'
+      },
+      'Mercury': {
+        type: 'Terrestrial Planet',
+        diameter: '4,879 km',
+        distance: '57.9 million km',
+        description: 'Mercury is the smallest and innermost planet in the Solar System. It has a rocky surface covered in craters similar to Earth\'s Moon.'
+      },
+      'Venus': {
+        type: 'Terrestrial Planet',
+        diameter: '12,104 km',
+        distance: '108.2 million km',
+        description: 'Venus is often called Earth\'s sister planet due to their similar size. It has a thick atmosphere that creates a runaway greenhouse effect.'
+      },
+      'Earth': {
+        type: 'Terrestrial Planet',
+        diameter: '12,742 km',
+        distance: '149.6 million km',
+        description: 'Earth is the only known planet to support life. It has one natural satellite, the Moon, and is the largest of the terrestrial planets.'
+      },
+      'Mars': {
+        type: 'Terrestrial Planet',
+        diameter: '6,779 km',
+        distance: '227.9 million km',
+        description: 'Mars is known as the Red Planet due to iron oxide on its surface. It has the largest volcano in the solar system, Olympus Mons.'
+      },
+      'Jupiter': {
+        type: 'Gas Giant',
+        diameter: '139,820 km',
+        distance: '778.5 million km',
+        description: 'Jupiter is the largest planet in our Solar System. Its Great Red Spot is a giant storm that has been raging for at least 400 years.'
+      },
+      'Saturn': {
+        type: 'Gas Giant',
+        diameter: '116,460 km',
+        distance: '1.434 billion km',
+        description: 'Saturn is famous for its spectacular ring system, composed primarily of ice particles, rocky debris, and dust.'
+      },
+      'Uranus': {
+        type: 'Ice Giant',
+        diameter: '50,724 km',
+        distance: '2.871 billion km',
+        description: 'Uranus is unique among planets as it rotates on its side. It appears blue-green due to methane in its atmosphere.'
+      },
+      'Neptune': {
+        type: 'Ice Giant',
+        diameter: '49,244 km',
+        distance: '4.495 billion km',
+        description: 'Neptune is the windiest planet, with speeds reaching 2,100 km/h. It has a dynamic atmosphere with visible storm systems.'
+      }
+    };
+
     function createStars() {
       const starsContainer = document.createElement('div');
       starsContainer.className = 'stars';
@@ -345,7 +441,6 @@
         const size = Math.random() * 2 + 1;
         star.style.width = `${size}px`;
         star.style.height = `${size}px`;
-        
         star.style.left = `${Math.random() * 100}%`;
         star.style.top = `${Math.random() * 100}%`;
         
@@ -361,17 +456,42 @@
 
     // Handle hover events for planets and sun
     const displayName = document.getElementById('display-name');
+    const infoPanel = document.getElementById('info-panel');
     const celestialBodies = document.querySelectorAll('.planet, .sun');
+
+    function updateInfoPanel(name) {
+      const info = planetInfo[name];
+      infoPanel.innerHTML = `
+        <h2>${name}</h2>
+        <div class="info-stat">
+          <span class="info-stat-label">Type:</span>
+          <span>${info.type}</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat-label">Diameter:</span>
+          <span>${info.diameter}</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat-label">Distance from Sun:</span>
+          <span>${info.distance}</span>
+        </div>
+        <p>${info.description}</p>
+      `;
+    }
 
     celestialBodies.forEach(body => {
       body.addEventListener('mouseenter', () => {
-        displayName.textContent = body.dataset.name;
+        const name = body.dataset.name;
+        displayName.textContent = name;
         displayName.style.opacity = '1';
+        updateInfoPanel(name);
+        infoPanel.style.opacity = '1';
       });
 
-      body.addEventListener('mouseleave', () => {
-        displayName.style.opacity = '0';
-      });
+      // body.addEventListener('mouseleave', () => {
+      //   displayName.style.opacity = '0';
+      //   infoPanel.style.opacity = '0';
+      // });
     });
   </script>
 </body>
